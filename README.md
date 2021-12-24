@@ -10,10 +10,11 @@ Then use it like this:
 import 'gach'
 
 const coloredString = 'your string'.color('red')
-console.log(coloredString) // output: 'your string' in red color!
+console.log(`<<<<< ${coloredString} >>>>>`)
 ```
 
-This will show something like this:
-```diff
- "your string"
-```
+The result will be like below:
+
+Output:
+![alt text](./example.png "Example Result")
+
