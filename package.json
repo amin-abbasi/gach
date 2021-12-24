@@ -1,5 +1,5 @@
 {
-  "name": "rangi",
+  "name": "gach",
   "version": "1.0.0",
   "description": "This is a package to colorize your terminal text messages.",
   "main": "dist/index.js",
@@ -10,13 +10,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amin4193/rangi.git"
+    "url": "git+https://github.com/amin4193/gach.git"
   },
   "keywords": [],
   "author": "amin4193",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/amin4193/rangi/issues"
+    "url": "https://github.com/amin4193/gach/issues"
   },
-  "homepage": "https://github.com/amin4193/rangi#readme"
+  "homepage": "https://github.com/amin4193/gach#readme"
 }

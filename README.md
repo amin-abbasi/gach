@@ -1,18 +1,19 @@
-# rangi
+# gach
 This is a package to colorize your terminal text messages.
 
 ## Install & Use
 You can install it by:
-`npm i rangi`
+`npm i gach`
 
 Then use it like this:
-```
-import 'rangi'
+```js
+import 'gach'
 
-const yourString = 'your string'
-const coloredString = yourString.color('red')
-console.log(coloredString)
+const coloredString = 'your string'.color('red')
+console.log(coloredString) // output: 'your string' in red color!
 ```
 
 This will show something like this:
-![Alt text](./example.png?raw=true "Example")
+```diff
+ "your string"
+```
