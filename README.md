@@ -18,3 +18,20 @@ The result will be like below:
 Output:
 ![alt text](./example.png "Example Result")
 
+### Supported Colors
+Supported colors for both font and background are:
+- red
+- green
+- blue
+- yellow
+- cyan
+- magenta
+- gray
+- black
+
+## Supported Font Actions
+- bold
+- italic
+- underline
+- strikethrough
+- inverse
