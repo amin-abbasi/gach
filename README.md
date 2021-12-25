@@ -18,7 +18,7 @@ The result will be like below:
 Output:
 ![alt text](./example.png "Example Result")
 
-### Supported Colors
+## Supported Colors & Font Actions
 Supported colors for both font and background are:
 - red
 - green
@@ -29,7 +29,7 @@ Supported colors for both font and background are:
 - gray
 - black
 
-## Supported Font Actions
+Supported actions are:
 - bold
 - italic
 - underline
