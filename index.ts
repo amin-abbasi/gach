@@ -1,92 +1,91 @@
-declare global {
-  interface String {
+import { backColors, BACKGROUND_COLORS, COLORS, colors } from './config'
 
-    color(id: colors): string;
-    backColor(id: backColors): string;
+const COLOR_END = '\u001B[39m'
+const STYLE_END = '\x1b[0m'
 
-    bold(): string;
-    italic(): string;
-    underline(): string;
-    strikethrough(): string;
-    inverse(): string;
-  }
-}
-
-type colors = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'gray' |
-  'lightRed' | 'lightGreen' | 'lightYellow' | 'lightBlue' | 'lightMagenta' | 'lightCyan'
-
-export enum COLORS {
-  black   = '30',
-  red     = '31',
-  green   = '32',
-  yellow  = '33',
-  blue    = '34',
-  magenta = '35',
-  cyan    = '36',
-  gray    = '90',
-  lightRed     = '91',
-  lightGreen   = '92',
-  lightYellow  = '93',
-  lightBlue    = '94',
-  lightMagenta = '95',
-  lightCyan    = '96',
+// Hex To RGB Converter
+function hexToRgb(hex: string): { r: number, g: number, b: number } | null {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null
 }
 
 
-type backColors = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' |
-   'cyan' | 'gray' | 'lightRed' | 'lightGreen' | 'lightYellow' | 'lightBlue' |
-    'lightMagenta' | 'lightCyan' | 'lightBlack' | 'lightGray'
+// ----------------------------------------------------------------------
+// ----------------------------- FONT COLORS ----------------------------
+// ----------------------------------------------------------------------
 
-export enum BACKGROUND_COLORS {
-  black   = '40',
-  red     = '41',
-  green   = '42',
-  yellow  = '43',
-  blue    = '44',
-  magenta = '45',
-  cyan    = '46',
-  gray    = '47',
-  lightBlack   = '100',
-  lightRed     = '101',
-  lightGreen   = '102',
-  lightYellow  = '103',
-  lightBlue    = '104',
-  lightMagenta = '105',
-  lightCyan    = '106',
-  lightGray    = '107',
+/**
+ * Colorize your string text
+ * @param   {colors}    color   selected color [`red`, `blue`, ... ]
+ * @returns returns your colorized string
+ */
+function color(text: string, color: colors): string {
+  return `\u001B[${COLORS[color]}m${text}${COLOR_END}`
 }
 
-// --------------------------------------------
-// ---------------- FONT COLORS ---------------
-// --------------------------------------------
-String.prototype.color = function(id: colors): string {
-  return `\x1b[${COLORS[id]}m${this}\x1b[0m`
-}
-
-String.prototype.backColor = function(id: backColors): string {
-  return `\x1b[${BACKGROUND_COLORS[id]}m${this}\x1b[0m`
+/**
+ * Colorize your string text background
+ * @param   {backColors}    color   selected color [`red`, `blue`, ... ]
+ * @returns returns your text with colorized background
+ */
+function colorBack(text: string, color: backColors): string {
+  return `\u001B[${BACKGROUND_COLORS[color]}m${text}${COLOR_END}`
 }
 
 
-// --------------------------------------------
-// --------------- FONT ACTIONS ---------------
-// --------------------------------------------
-String.prototype.bold = function(): string {
-  return `\x1b[1m${this}\x1b[0m`
+// ----------------------------------------------------------------------
+// ---------------------------- FONT STYLES -----------------------------
+// ----------------------------------------------------------------------
+
+/**
+ * String style will be bold
+ * @param   {string}    text   given string text
+ * @returns returns your text as bold
+ */
+function bold(text: string): string {
+  return `\x1b[1m${text}${STYLE_END}`
 }
 
-String.prototype.italic = function(): string {
-  return `\x1b[3m${this}\x1b[0m`
+/**
+ * String style will be italic
+ * @param   {string}    text   given string text
+ * @returns returns your text as italic
+ */
+function italic(text: string): string {
+  return `\u001B[3m${text}${STYLE_END}`
 }
 
-String.prototype.underline = function(): string {
-  return `\x1b[4m${this}\x1b[0m`
+/**
+ * String style will be underlined
+ * @param   {string}    text   given string text
+ * @returns returns your text with underline
+ */
+function underline(text: string): string {
+  return `\u001B[4m${text}${STYLE_END}`
 }
 
-String.prototype.inverse = function(): string {
-  return `\x1b[7m${this}\x1b[0m`
+/**
+ * Inverse your string
+ * @param   {string}    text   given string text
+ * @returns returns your text as inverse
+ */
+function inverse(text: string): string {
+  return `\u001B[7m${text}${STYLE_END}`
 }
 
-String.prototype.strikethrough = function(): string {
-  return `\x1b[9m${this}\x1b[0m`
+/**
+ * String style will be strikethrough
+ * @param   {string}    text   given string text
+ * @returns returns your text as strikethrough
+ */
+function strikethrough(text: string): string {
+  return `\u001B[9m${text}${STYLE_END}`
+}
+
+export default {
+  color, colorBack, bold, italic, inverse, strikethrough, underline
 }

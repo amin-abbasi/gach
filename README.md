@@ -1,15 +1,16 @@
 # gach
 This is a package to colorize your terminal text messages.
 
-## Install & Use
+## Install
 You can install it by:
 `npm i gach`
 
-Then use it like this:
+## Usage
+You can use this package like this:
 ```js
-import 'gach'
+import gach from 'gach'
 
-const coloredString = 'your string'.color('red')
+const coloredString = gach.color('your string', 'red')
 console.log(`<<<<< ${coloredString} >>>>>`)
 ```
 
@@ -18,7 +19,8 @@ The result will be like below:
 Output:
 ![alt text](./example.png "Example Result")
 
-## Supported Colors & Font Actions
+## Supported Colors & Styles
+### Colors
 Supported colors for both font and background are:
 - red
 - green
@@ -28,8 +30,15 @@ Supported colors for both font and background are:
 - magenta
 - gray
 - black
+- lightRed
+- lightGreen
+- lightYellow
+- lightBlue
+- lightMagenta
+- lightCyan
 
-Supported actions are:
+### Styles
+Supported styles are:
 - bold
 - italic
 - underline
