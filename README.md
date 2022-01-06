@@ -10,8 +10,7 @@ You can use this package like this:
 ```js
 import gach from 'gach'
 
-const coloredString = gach.color('your string', 'red')
-console.log(`<<<<< ${coloredString} >>>>>`)
+console.log(`<<<<< ${gach.color('your string', 'red')} >>>>>`)
 ```
 
 The result will be like below:
