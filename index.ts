@@ -151,6 +151,4 @@ function gach(text: string) {
   }
 }
 
-gach('amin').bold().color('green').underline().text
-
 export default gach

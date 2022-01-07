@@ -8,13 +8,15 @@ You can install it by:
 ## Usage
 You can use this package like this:
 ```js
-import gach from '..'
+import gach from 'gach'
 
-console.log(`<<< ${gach('My LIGHT BLUE color').color('lightBlue').text} >>>`)
-console.log(`<<< ${gach('My BOLD string').bold().text} >>>`)
-console.log(`<<< ${gach('My RGB color - code: [118, 38, 113]').rgb(118, 38, 113).text} >>>`)
-console.log(`<<< ${gach('My HEX color - code: #FF7733').hex('#FF7733').text} >>>`)
-console.log(`<<< ${gach('My NESTED bold underlined green').underline().bold().color('green').text} >>>`)
+const log = console.log
+
+log(`<<< ${gach('My LIGHT BLUE color').color('lightBlue').text} >>>`)
+log(`<<< ${gach('My BOLD string').bold().text} >>>`)
+log(`<<< ${gach('My RGB color - code: [118, 38, 113]').rgb(118, 38, 113).text} >>>`)
+log(`<<< ${gach('My HEX color - code: #FF7733').hex('#FF7733').text} >>>`)
+log(`<<< ${gach('My NESTED bold underlined green').underline().bold().color('green').text} >>>`)
 ```
 
 The result will be like below:
