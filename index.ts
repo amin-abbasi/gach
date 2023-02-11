@@ -20,11 +20,23 @@ function hexToRgb(hex: string): { r: number, g: number, b: number } | null {
  */
 function gach(text: string) {
 
+  const originalText = text
 
   return {
 
-    /**Modified Text */
+    /** Original Text */
+    originalText,
+
+    /** Modified Text */
     text,
+
+    /** Reset All Changes
+     * @returns returns your original string text
+     */
+    reset() {
+      this.text = this.originalText
+      return this
+    },
 
     // ----------------------------------------------------------------------
     // ----------------------------- FONT COLORS ----------------------------
