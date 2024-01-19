@@ -1,22 +1,22 @@
 {
   "name": "gach",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "This is a package to colorize your terminal text messages.",
   "main": "dist/index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amin4193/gach.git"
+    "url": "git+https://github.com/amin-abbasi/gach.git"
   },
   "keywords": [],
-  "author": "amin4193",
-  "license": "ISC",
+  "author": "amin-abbasi",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/amin4193/gach/issues"
+    "url": "https://github.com/amin-abbasi/gach/issues"
   },
-  "homepage": "https://github.com/amin4193/gach#readme"
+  "homepage": "https://github.com/amin-abbasi/gach#readme"
 }

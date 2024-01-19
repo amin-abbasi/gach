@@ -1,16 +1,86 @@
-import { backColors, BACKGROUND_COLORS, COLORS, colors } from './config'
+export type Colors =
+  | 'black'
+  | 'red'
+  | 'green'
+  | 'yellow'
+  | 'blue'
+  | 'magenta'
+  | 'cyan'
+  | 'gray'
+  | 'lightRed'
+  | 'lightGreen'
+  | 'lightYellow'
+  | 'lightBlue'
+  | 'lightMagenta'
+  | 'lightCyan'
+
+export enum COLORS {
+  black = '30',
+  red = '31',
+  green = '32',
+  yellow = '33',
+  blue = '34',
+  magenta = '35',
+  cyan = '36',
+  gray = '90',
+  lightRed = '91',
+  lightGreen = '92',
+  lightYellow = '93',
+  lightBlue = '94',
+  lightMagenta = '95',
+  lightCyan = '96',
+}
+
+export type backColors =
+  | 'black'
+  | 'red'
+  | 'green'
+  | 'yellow'
+  | 'blue'
+  | 'magenta'
+  | 'cyan'
+  | 'gray'
+  | 'lightRed'
+  | 'lightGreen'
+  | 'lightYellow'
+  | 'lightBlue'
+  | 'lightMagenta'
+  | 'lightCyan'
+  | 'lightBlack'
+  | 'lightGray'
+
+export enum BACKGROUND_COLORS {
+  black = '40',
+  red = '41',
+  green = '42',
+  yellow = '43',
+  blue = '44',
+  magenta = '45',
+  cyan = '46',
+  gray = '47',
+  lightBlack = '100',
+  lightRed = '101',
+  lightGreen = '102',
+  lightYellow = '103',
+  lightBlue = '104',
+  lightMagenta = '105',
+  lightCyan = '106',
+  lightGray = '107',
+}
 
 const COLOR_END = '\u001B[39m'
 const STYLE_END = '\x1b[0m'
 
 // Hex To RGB Converter
-function hexToRgb(hex: string): { r: number, g: number, b: number } | null {
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null
 }
 
 /**
@@ -19,11 +89,9 @@ function hexToRgb(hex: string): { r: number, g: number, b: number } | null {
  * @returns returns the modified text based on your filter
  */
 function gach(text: string) {
-
   const originalText = text
 
   return {
-
     /** Original Text */
     originalText,
 
@@ -47,10 +115,10 @@ function gach(text: string) {
      * @param   {colors}    color   selected color [`red`, `blue`, ... ]
      * @returns returns your colorized string
      */
-    color(color: colors) {
-      if(!this.text || this.text === '') return this
+    color(color: Colors) {
+      if (!this.text || this.text === '') return this
       const colorCode = COLORS[color].valueOf()
-      if(!colorCode) return this
+      if (!colorCode) return this
       this.text = `\u001B[${colorCode}m${this.text}${COLOR_END}`
       return this
     },
@@ -61,9 +129,9 @@ function gach(text: string) {
      * @returns returns your text with colorized background
      */
     colorBack(color: backColors) {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       const colorCode = BACKGROUND_COLORS[color].valueOf()
-      if(!colorCode) return this
+      if (!colorCode) return this
       this.text = `\u001B[${BACKGROUND_COLORS[color]}m${this.text}${COLOR_END}`
       return this
     },
@@ -76,14 +144,16 @@ function gach(text: string) {
      * @returns returns your colorized string using rgb code
      */
     rgb(red: number, green: number, blue: number) {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
 
       // Fix RGB values
-      if(red > 255) red -= 256
-      if(green > 255) green -= 256
-      if(blue > 255) blue -= 256
+      if (red > 255) red -= 256
+      if (green > 255) green -= 256
+      if (blue > 255) blue -= 256
 
-      this.text = `\u001B[${38};2;${red};${green};${blue}m${this.text}${COLOR_END}`
+      this.text = `\u001B[${38};2;${red};${green};${blue}m${
+        this.text
+      }${COLOR_END}`
       return this
     },
 
@@ -93,13 +163,14 @@ function gach(text: string) {
      * @returns returns your colorized text using hex code
      */
     hex(hex: string) {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       const rgb = hexToRgb(hex)
-      if(!rgb) return this
-      this.text = `\u001B[${38};2;${rgb.r};${rgb.g};${rgb.b}m${this.text}${COLOR_END}`
+      if (!rgb) return this
+      this.text = `\u001B[${38};2;${rgb.r};${rgb.g};${rgb.b}m${
+        this.text
+      }${COLOR_END}`
       return this
     },
-
 
     // ----------------------------------------------------------------------
     // ---------------------------- FONT STYLES -----------------------------
@@ -111,7 +182,7 @@ function gach(text: string) {
      * @returns returns your text as bold
      */
     bold() {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       this.text = `\x1b[1m${this.text}${STYLE_END}`
       return this
     },
@@ -122,7 +193,7 @@ function gach(text: string) {
      * @returns returns your text as italic
      */
     italic() {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       this.text = `\u001B[3m${this.text}${STYLE_END}`
       return this
     },
@@ -133,7 +204,7 @@ function gach(text: string) {
      * @returns returns your text with underline
      */
     underline() {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       this.text = `\u001B[4m${this.text}${STYLE_END}`
       return this
     },
@@ -144,7 +215,7 @@ function gach(text: string) {
      * @returns returns your text as inverse
      */
     inverse() {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       this.text = `\u001B[7m${this.text}${STYLE_END}`
       return this
     },
@@ -155,11 +226,10 @@ function gach(text: string) {
      * @returns returns your text as strikethrough
      */
     strikethrough() {
-      if(!this.text || this.text === '') return this
+      if (!this.text || this.text === '') return this
       this.text = `\u001B[9m${this.text}${STYLE_END}`
       return this
     },
-
   }
 }
 
