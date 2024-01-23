@@ -2,6 +2,7 @@ import gach from '..'
 
 const log = console.log
 
+log(`<<< ${gach('').color('magenta').bold().text} >>> <-- Empty String!`)
 log(`<<< ${gach('My LIGHT BLUE color').color('lightBlue').text} >>>`)
 log(`<<< ${gach('My BOLD string').bold().text} >>>`)
 log(`<<< ${gach('My RGB color - code: [118, 38, 113]').rgb(118, 38, 113).text} >>>`)
