@@ -1,19 +1,22 @@
 # gach
-This is a package to colorize your terminal text messages.
+**gach** is a package designed to add color and style to your terminal text messages.
 
 ## Features
-- pre-defined system font & background colors (red, green, ...)
-- font color using `rgb` and `hex`
-- font styles (bold, ...)
-- nested functions ability
-- reset all changes on your text
+- Pre-defined system font & background colors (red, green, ...).
+- Font color using `rgb` and `hex` values.
+- Font styles (bold, italic, underline, strikethrough, inverse).
+- Nested functions for chaining styles.
+- Reset function to revert text to its original state.
+
 
 ## Install
-You can install it by:
-`npm i gach`
+You can install **gach** using npm:
+```bash
+npm i gach
+```
 
 ## Usage
-You can use this package like this:
+You can use this package like this in both Javascript and Typescript:
 ```js
 import gach from 'gach'
 
