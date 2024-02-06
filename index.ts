@@ -1,72 +1,6 @@
-type Colors =
-  | 'black'
-  | 'red'
-  | 'green'
-  | 'yellow'
-  | 'blue'
-  | 'magenta'
-  | 'cyan'
-  | 'gray'
-  | 'lightRed'
-  | 'lightGreen'
-  | 'lightYellow'
-  | 'lightBlue'
-  | 'lightMagenta'
-  | 'lightCyan'
+import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_NAMES, Colors } from './types'
 
-export enum COLORS {
-  black = '30',
-  red = '31',
-  green = '32',
-  yellow = '33',
-  blue = '34',
-  magenta = '35',
-  cyan = '36',
-  gray = '90',
-  lightRed = '91',
-  lightGreen = '92',
-  lightYellow = '93',
-  lightBlue = '94',
-  lightMagenta = '95',
-  lightCyan = '96',
-}
-
-type BackgroundColors =
-  | 'black'
-  | 'red'
-  | 'green'
-  | 'yellow'
-  | 'blue'
-  | 'magenta'
-  | 'cyan'
-  | 'gray'
-  | 'lightRed'
-  | 'lightGreen'
-  | 'lightYellow'
-  | 'lightBlue'
-  | 'lightMagenta'
-  | 'lightCyan'
-  | 'lightBlack'
-  | 'lightGray'
-
-export enum BACKGROUND_COLORS {
-  black = '40',
-  red = '41',
-  green = '42',
-  yellow = '43',
-  blue = '44',
-  magenta = '45',
-  cyan = '46',
-  gray = '47',
-  lightBlack = '100',
-  lightRed = '101',
-  lightGreen = '102',
-  lightYellow = '103',
-  lightBlue = '104',
-  lightMagenta = '105',
-  lightCyan = '106',
-  lightGray = '107',
-}
+export * from './types'
 
 const COLOR_END = '\u001B[39m'
 const STYLE_END = '\x1b[0m'
@@ -77,32 +11,20 @@ interface RGB {
   b: number
 }
 
-interface StyleOptions {
-  color?: Colors
-  bgColor?: BackgroundColors
-  rgb?: RGB
-  hex?: string
-  bold?: boolean
-  italic?: boolean
-  underline?: boolean
-  inverse?: boolean
-  strikethrough?: boolean
-}
-
 class Gach {
-  private originalText: string
-  private modifiedText: string
+  #originalText: string
+  #modifiedText: string
 
   constructor(text: string) {
-    this.originalText = text
-    this.modifiedText = text
+    this.#originalText = text
+    this.#modifiedText = text
   }
 
   get text() {
-    return this.modifiedText
+    return this.#modifiedText
   }
 
-  private hexToRgb(hex: string): RGB | null {
+  #hexToRgb(hex: string): RGB | null {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
     return result
       ? {
@@ -114,23 +36,23 @@ class Gach {
   }
 
   reset() {
-    this.modifiedText = this.originalText
+    this.#modifiedText = this.#originalText
     return this
   }
 
   // ------------ Color Methods ------------
   color(color: Colors) {
-    const colorCode = COLORS[color].valueOf()
+    const colorCode = COLOR_CODES[color].valueOf()
     if (colorCode) {
-      this.modifiedText = `\u001B[${colorCode}m${this.modifiedText}${COLOR_END}`
+      this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`
     }
     return this
   }
 
-  bgColor(bgColor: BackgroundColors) {
-    const colorCode = BACKGROUND_COLORS[bgColor].valueOf()
+  bgColor(bgColor: Colors) {
+    const colorCode = BACKGROUND_COLOR_CODES[bgColor].valueOf()
     if (!colorCode) return this
-    this.modifiedText = `\u001B[${BACKGROUND_COLORS[bgColor]}m${this.modifiedText}${COLOR_END}`
+    this.#modifiedText = `\u001B[${BACKGROUND_COLOR_CODES[bgColor]}m${this.#modifiedText}${COLOR_END}`
     return this
   }
 
@@ -139,44 +61,44 @@ class Gach {
     if (green > 255) green -= 256
     if (blue > 255) blue -= 256
 
-    this.modifiedText = `\u001B[${38};2;${red};${green};${blue}m${
-      this.modifiedText
+    this.#modifiedText = `\u001B[${38};2;${red};${green};${blue}m${
+      this.#modifiedText
     }${COLOR_END}`
     return this
   }
 
   hex(hex: string) {
-    const rgb = this.hexToRgb(hex)
+    const rgb = this.#hexToRgb(hex)
     if (!rgb) return this
-    this.modifiedText = `\u001B[${38};2;${rgb.r};${rgb.g};${rgb.b}m${
-      this.modifiedText
+    this.#modifiedText = `\u001B[${38};2;${rgb.r};${rgb.g};${rgb.b}m${
+      this.#modifiedText
     }${COLOR_END}`
     return this
   }
 
   // ------------ Styling Methods ------------
   underline() {
-    this.modifiedText = `\u001B[4m${this.modifiedText}${STYLE_END}`
+    this.#modifiedText = `\u001B[4m${this.#modifiedText}${STYLE_END}`
     return this
   }
 
   bold() {
-    this.modifiedText = `\x1b[1m${this.modifiedText}${STYLE_END}`
+    this.#modifiedText = `\x1b[1m${this.#modifiedText}${STYLE_END}`
     return this
   }
 
   italic() {
-    this.modifiedText = `\u001B[3m${this.modifiedText}${STYLE_END}`
+    this.#modifiedText = `\u001B[3m${this.#modifiedText}${STYLE_END}`
     return this
   }
 
   inverse() {
-    this.modifiedText = `\u001B[7m${this.modifiedText}${STYLE_END}`
+    this.#modifiedText = `\u001B[7m${this.#modifiedText}${STYLE_END}`
     return this
   }
 
   strikethrough() {
-    this.modifiedText = `\u001B[9m${this.modifiedText}${STYLE_END}`
+    this.#modifiedText = `\u001B[9m${this.#modifiedText}${STYLE_END}`
     return this
   }
 }
