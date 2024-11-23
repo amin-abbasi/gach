@@ -190,7 +190,7 @@ class Gach {
      * Applies multiple custom styles using an object with various attributes.
      *
      * @param {StyleOptions} styles - An object containing style properties such as color, bgColor, and other CSS styles.
-     * @returns {Gach} The current instance for method chaining.
+     * @returns The current instance for method chaining.
      *
      * @example
      * const instance = new Gach();
@@ -236,6 +236,57 @@ class Gach {
         });
 
         this.#applyStyles();
+        return this;
+    }
+
+    // ------------ Convenience Methods ------------
+
+    /**
+     * Apply green text and bold style (success message).
+     * @returns The current instance for method chaining
+     */
+    success() {
+        this.color(COLOR_NAMES.GREEN).bold();
+        this.#applyStyles();
+        return this;
+    }
+
+    /**
+     * Apply red text, bold, and underline style (error message).
+     * @returns The current instance for method chaining
+     */
+    error() {
+        this.color(COLOR_NAMES.RED).bold().underline();
+        this.#applyStyles();
+        return this;
+    }
+
+    /**
+     * Apply yellow text, bold, and italic style (warning message).
+     * @returns The current instance for method chaining
+     */
+    warning() {
+        this.color(COLOR_NAMES.YELLOW).bold().italic();
+        this.#applyStyles();
+        return this;
+    }
+
+    /**
+     * Apply rainbow effect with a variety of colors.
+     * @returns The current instance for method chaining
+     */
+    rainbow() {
+        const rainbowColors: Colors[] = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];
+        let rainbowText = '';
+        let colorIndex = 0;
+
+        // Split the original text into individual characters and apply rainbow effect
+        for (let i = 0; i < this.#originalText.length; i++) {
+            rainbowText += gach(this.#originalText[i]).color(rainbowColors[colorIndex]).text;
+            colorIndex = (colorIndex + 1) % rainbowColors.length; // Cycle through colors
+        }
+
+        this.#modifiedText = rainbowText; // Set the rainbow effect text
         return this;
     }
 }
