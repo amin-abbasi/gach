@@ -1,4 +1,4 @@
-import gach, { COLOR_NAMES } from '../index'
+import gach, { COLOR_NAMES } from '../src/index'
 
 const log = console.log
 
