@@ -1,23 +1,76 @@
+# Gach - ANSI Text Styling Library
+
+Gach is a JavaScript library for styling and coloring text using ANSI escape codes. It allows you to easily apply various text styles and colors to your console output.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Methods](#methods)
+  - [Constructor](#constructor)
+  - [get text](#get-text)
+  - [reset](#reset)
+  - [color](#color)
+  - [bgColor](#bgcolor)
+  - [rgb](#rgb)
+  - [hex](#hex)
+  - [underline](#underline)
+  - [bold](#bold)
+  - [italic](#italic)
+  - [inverse](#inverse)
+  - [strikethrough](#strikethrough)
+  - [customStyle](#customstyle)
+- [Example](#example)
+
+## Installation
+You can install Gach via npm:
+
+```bash
+npm install gach
+```
+
+## Usage
+To use Gach, import it into your JavaScript or TypeScript file and create an instance with the text you want to style.
+
+```ts
+import gach from 'gach';
+
+const styledText = gach('Hello, World!')
+    .color('red')
+    .bgColor('blue')
+    .bold()
+    .underline()
+    .text;
+
+console.log(styledText);
+```
+This will output the text "Hello, World!" styled with red text on a blue background, bold, and underlined effect.
+
+
 # gach
 **gach** is a package designed to add color and style to your terminal text messages.
 
 ## Features
-- Pre-defined system font & background colors (red, green, ...).
+- Pre-defined system font & background colors (red, green, blue, yellow, cyan, magenta, gray, black, and their light variants).
 - Font color using `rgb` and `hex` values.
+- Support for predefined color names (e.g., `COLOR_NAMES`).
 - Font styles (bold, italic, underline, strikethrough, inverse).
+- Custom styles can be applied using an object for more flexibility.
 - Nested functions for chaining styles.
 - Reset function to revert text to its original state.
-
+- Error handling for invalid color inputs (if applicable).
 
 ## Install
+
 You can install **gach** using npm:
+
 ```bash
 npm i gach
 ```
 
-## Usage
+## Usage Examples
 You can use this package like this in both Javascript and Typescript:
-```js
+```ts
 import gach, { COLOR_NAMES } from 'gach'
 
 const log = console.log

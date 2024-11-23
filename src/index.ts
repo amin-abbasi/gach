@@ -187,11 +187,16 @@ class Gach {
     }
 
     /**
-     * Apply multiple custom styles using an object with different attributes
-     * @param {StyleOptions} styles - Object with keys for color, bgColor, and other styles
-     * @returns {Gach} - The current instance for method chaining
+     * Applies multiple custom styles using an object with various attributes.
+     *
+     * @param {StyleOptions} styles - An object containing style properties such as color, bgColor, and other CSS styles.
+     * @returns {Gach} The current instance for method chaining.
+     *
+     * @example
+     * const instance = new Gach();
+     * instance.applyStyles({ color: 'red', bgColor: 'blue' });
      */
-    customStyle(styles: StyleOptions): Gach {
+    customStyle(styles: StyleOptions) {
         if (styles.color) {
             const colorCode = COLOR_CODES[styles.color as Colors].valueOf();
             if (colorCode) this.#state.color = colorCode;
