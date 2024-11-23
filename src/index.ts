@@ -1,4 +1,4 @@
-import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, RGB, STYLE_END, StyleOptions } from './types';
+import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, HEX_PATTERN, HexColorString, RGB, STYLE_END, StyleOptions } from './types';
 export * from './types';
 
 /**
@@ -41,14 +41,33 @@ class Gach {
         return this;
     }
 
+    // Helper method to validate RGB values (must be integers between 0 and 255)
+    #validateRgb(r: number, g: number, b: number): boolean {
+        return [r, g, b].every((val) => Number.isInteger(val) && val >= 0 && val <= 255);
+    }
+
+    #isValidHexColor(hex: string): hex is HexColorString {
+        return HEX_PATTERN.test(hex);
+    }
+
     /**
      * Converts a hexadecimal color to RGB.
      * @param hex - The hexadecimal color string.
      * @returns An `RGB` object or `null` if the input is invalid.
      */
-    #hexToRgb(hex: string): RGB | null {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+    #hexToRgb(hex: string): { r: number; g: number; b: number } {
+        const hexValue = hex.slice(1);
+        let r: number, g: number, b: number;
+        if (hexValue.length === 3) {
+            r = parseInt(hexValue[0] + hexValue[0], 16);
+            g = parseInt(hexValue[1] + hexValue[1], 16);
+            b = parseInt(hexValue[2] + hexValue[2], 16);
+        } else {
+            r = parseInt(hexValue.slice(0, 2), 16);
+            g = parseInt(hexValue.slice(2, 4), 16);
+            b = parseInt(hexValue.slice(4, 6), 16);
+        }
+        return { r, g, b };
     }
 
     /**
@@ -101,11 +120,11 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     rgb(red: number, green: number, blue: number) {
-        if (red > 255) red -= 256;
-        if (green > 255) green -= 256;
-        if (blue > 255) blue -= 256;
-
-        this.#modifiedText = `\u001B[38;2;${red};${green};${blue}m${this.#modifiedText}${COLOR_END}`;
+        if (!this.#validateRgb(red, green, blue)) {
+            console.error(`Invalid RGB values: [${red}, ${green}, ${blue}]. Each value must be an integer between 0 and 255.`);
+        } else {
+            this.#modifiedText = `\u001B[38;2;${red};${green};${blue}m${this.#modifiedText}${COLOR_END}`;
+        }
         return this;
     }
 
@@ -115,9 +134,12 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     hex(hex: string) {
-        const rgb = this.#hexToRgb(hex);
-        if (!rgb) return this;
-        this.#modifiedText = `\u001B[38;2;${rgb.r};${rgb.g};${rgb.b}m${this.#modifiedText}${COLOR_END}`;
+        if (!this.#isValidHexColor(hex)) {
+            console.error(`Invalid HEX color code: ${hex}. Ensure the HEX value is in the format #RRGGBB or #RGB.`);
+        } else {
+            const { r, g, b } = this.#hexToRgb(hex);
+            this.#modifiedText = `\u001B[38;2;${r};${g};${b}m${this.#modifiedText}${COLOR_END}`;
+        }
         return this;
     }
 
@@ -190,7 +212,7 @@ class Gach {
      * Applies multiple custom styles using an object with various attributes.
      *
      * @param {StyleOptions} styles - An object containing style properties such as color, bgColor, and other CSS styles.
-     * @returns The current instance for method chaining.
+     * @returns The current `Gach` instance for chaining.
      *
      * @example
      * const instance = new Gach();
@@ -243,7 +265,7 @@ class Gach {
 
     /**
      * Apply green text and bold style (success message).
-     * @returns The current instance for method chaining
+     * @returns The current `Gach` instance for chaining.
      */
     success() {
         this.color(COLOR_NAMES.GREEN).bold();
@@ -253,7 +275,7 @@ class Gach {
 
     /**
      * Apply red text, bold, and underline style (error message).
-     * @returns The current instance for method chaining
+     * @returns The current `Gach` instance for chaining.
      */
     error() {
         this.color(COLOR_NAMES.RED).bold().underline();
@@ -263,7 +285,7 @@ class Gach {
 
     /**
      * Apply yellow text, bold, and italic style (warning message).
-     * @returns The current instance for method chaining
+     * @returns The current `Gach` instance for chaining.
      */
     warning() {
         this.color(COLOR_NAMES.YELLOW).bold().italic();
@@ -273,7 +295,7 @@ class Gach {
 
     /**
      * Apply rainbow effect with a variety of colors.
-     * @returns The current instance for method chaining
+     * @returns The current `Gach` instance for chaining.
      */
     rainbow() {
         const rainbowColors: Colors[] = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];

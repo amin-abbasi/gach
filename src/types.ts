@@ -90,14 +90,89 @@ export interface RGB {
     g: number;
     b: number;
 }
-
+/**
+ * Interface that defines the style options for text formatting.
+ * It includes properties for setting colors, text styles (bold, underline, etc.),
+ * and additional custom styles like ANSI escape codes.
+ *
+ * @interface StyleOptions
+ */
 export interface StyleOptions {
-    color?: Colors | COLOR_NAMES; // For foreground color
-    bgColor?: Colors | COLOR_NAMES; // For background color
-    bold?: boolean; // For bold style
-    underline?: boolean; // For underline style
-    italic?: boolean; // For italic style
-    inverse?: boolean; // For inverse style
-    strikethrough?: boolean; // For strikethrough style
-    [key: string]: any; // For additional custom styles, like custom ANSI escape codes
+    /**
+     * Defines the foreground color of the text. Can be a predefined color name from `Colors` or `COLOR_NAMES`.
+     * For example, 'red', 'blue', or custom defined color values.
+     *
+     * @example 'red'
+     */
+    color?: Colors | COLOR_NAMES;
+
+    /**
+     * Defines the background color of the text. Can be a predefined color name from `Colors` or `COLOR_NAMES`.
+     * For example, 'black', 'yellow', or custom defined color values.
+     *
+     * @example 'yellow'
+     */
+    bgColor?: Colors | COLOR_NAMES;
+
+    /**
+     * Indicates whether the text should be bold.
+     *
+     * @example true
+     */
+    bold?: boolean;
+
+    /**
+     * Indicates whether the text should be underlined.
+     *
+     * @example true
+     */
+    underline?: boolean;
+
+    /**
+     * Indicates whether the text should be italicized.
+     *
+     * @example true
+     */
+    italic?: boolean;
+
+    /**
+     * Indicates whether the text should have inverse colors (background and text are swapped).
+     *
+     * @example true
+     */
+    inverse?: boolean;
+
+    /**
+     * Indicates whether the text should have a strikethrough effect.
+     *
+     * @example true
+     */
+    strikethrough?: boolean;
+
+    /**
+     * Allows for the inclusion of additional custom styles like custom ANSI escape codes.
+     *
+     * @example { 'customStyle': 'value' }
+     */
+    [key: string]: any;
 }
+
+/**
+ * Regular expression pattern to validate HEX color codes in the format of #RRGGBB or #RGB.
+ *
+ * @constant HEX_PATTERN
+ * @example '#FF5733'
+ */
+export const HEX_PATTERN = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
+
+/**
+ * A branded type to ensure that a string is a valid HEX color code.
+ * It is used for runtime validation and type safety of HEX color strings.
+ *
+ * The string type is "branded" to distinguish valid HEX strings from other strings.
+ * This helps to ensure only valid HEX color codes are accepted.
+ *
+ * @type HexColorString
+ * @example '#FF5733'
+ */
+export type HexColorString = string & { __brand: 'HexColor' };
