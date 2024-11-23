@@ -1,4 +1,4 @@
-import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, RGB, STYLE_END } from './types';
+import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, RGB, STYLE_END, StyleOptions } from './types';
 export * from './types';
 
 /**
@@ -11,7 +11,7 @@ class Gach {
     /** The modified text with applied styles. */
     #modifiedText: string;
 
-    #state: { colorCode?: string; bgColorCode?: string; stylesCode: string[] };
+    #state: { color?: string; bgColor?: string; styles: string[]; customStyles: string[] };
 
     /**
      * Creates a new `Gach` instance.
@@ -20,7 +20,7 @@ class Gach {
     constructor(text: string) {
         this.#originalText = text;
         this.#modifiedText = text;
-        this.#state = { stylesCode: [] };
+        this.#state = { styles: [], customStyles: [] };
     }
 
     /**
@@ -32,11 +32,12 @@ class Gach {
 
     #applyStyles() {
         const codes = [];
-        if (this.#state.colorCode) codes.push(this.#state.colorCode);
-        if (this.#state.bgColorCode) codes.push(this.#state.bgColorCode);
-        const styleCodes = this.#state.stylesCode.join('');
-        const startCode = codes.length > 0 ? `\u001B[${codes.join(';')}m` : '';
-        this.#modifiedText = `${startCode}${styleCodes}${this.#originalText}${STYLE_END}`;
+        if (this.#state.color) codes.push(this.#state.color);
+        if (this.#state.bgColor) codes.push(this.#state.bgColor);
+        const coloringCode = codes.length > 0 ? `\u001B[${codes.join(';')}m` : '';
+
+        const styleCodes = this.#state.styles.join('');
+        this.#modifiedText = `${coloringCode}${styleCodes}${this.#originalText}${STYLE_END}`;
         return this;
     }
 
@@ -55,7 +56,7 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     reset() {
-        this.#state = { stylesCode: [] };
+        this.#state = { styles: [], customStyles: [] };
         this.#modifiedText = this.#originalText;
         return this;
     }
@@ -70,7 +71,7 @@ class Gach {
         // if (!colorCode) return this;
         // this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`;
         if (colorCode) {
-            this.#state.colorCode = colorCode;
+            this.#state.color = colorCode;
             this.#applyStyles();
         }
         return this;
@@ -86,7 +87,7 @@ class Gach {
         // if (!colorCode) return this;
         // this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`;
         if (colorCode) {
-            this.#state.bgColorCode = colorCode;
+            this.#state.bgColor = colorCode;
             this.#applyStyles();
         }
         return this;
@@ -126,8 +127,8 @@ class Gach {
      */
     underline() {
         // this.#modifiedText = `\u001B[4m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.stylesCode.includes('\u001B[4m')) {
-            this.#state.stylesCode.push('\u001B[4m');
+        if (!this.#state.styles.includes('\u001B[4m')) {
+            this.#state.styles.push('\u001B[4m');
         }
         this.#applyStyles();
         return this;
@@ -139,8 +140,8 @@ class Gach {
      */
     bold() {
         // this.#modifiedText = `\x1b[1m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.stylesCode.includes('\x1b[1m')) {
-            this.#state.stylesCode.push('\x1b[1m');
+        if (!this.#state.styles.includes('\x1b[1m')) {
+            this.#state.styles.push('\x1b[1m');
         }
         this.#applyStyles();
         return this;
@@ -152,8 +153,8 @@ class Gach {
      */
     italic() {
         // this.#modifiedText = `\u001B[3m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.stylesCode.includes('\u001B[3m')) {
-            this.#state.stylesCode.push('\u001B[3m');
+        if (!this.#state.styles.includes('\u001B[3m')) {
+            this.#state.styles.push('\u001B[3m');
         }
         this.#applyStyles();
         return this;
@@ -165,8 +166,8 @@ class Gach {
      */
     inverse() {
         // this.#modifiedText = `\u001B[7m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.stylesCode.includes('\u001B[7m')) {
-            this.#state.stylesCode.push('\u001B[7m');
+        if (!this.#state.styles.includes('\u001B[7m')) {
+            this.#state.styles.push('\u001B[7m');
         }
         this.#applyStyles();
         return this;
@@ -178,9 +179,57 @@ class Gach {
      */
     strikethrough() {
         // this.#modifiedText = `\u001B[9m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.stylesCode.includes('\u001B[9m')) {
-            this.#state.stylesCode.push('\u001B[9m');
+        if (!this.#state.styles.includes('\u001B[9m')) {
+            this.#state.styles.push('\u001B[9m');
         }
+        this.#applyStyles();
+        return this;
+    }
+
+    /**
+     * Apply multiple custom styles using an object with different attributes
+     * @param {StyleOptions} styles - Object with keys for color, bgColor, and other styles
+     * @returns {Gach} - The current instance for method chaining
+     */
+    customStyle(styles: StyleOptions): Gach {
+        if (styles.color) {
+            const colorCode = COLOR_CODES[styles.color as Colors].valueOf();
+            if (colorCode) this.#state.color = colorCode;
+        }
+
+        if (styles.bgColor) {
+            const bgColorCode = BACKGROUND_COLOR_CODES[styles.bgColor as Colors].valueOf();
+            if (bgColorCode) this.#state.bgColor = bgColorCode;
+        }
+
+        if (styles.bold && !this.#state.styles.includes('\x1b[1m')) {
+            this.#state.styles.push('\x1b[1m');
+        }
+
+        if (styles.underline && !this.#state.styles.includes('\u001B[4m')) {
+            this.#state.styles.push('\u001B[4m');
+        }
+
+        if (styles.italic && !this.#state.styles.includes('\u001B[3m')) {
+            this.#state.styles.push('\u001B[3m');
+        }
+
+        if (styles.inverse && !this.#state.styles.includes('\u001B[7m')) {
+            this.#state.styles.push('\u001B[7m');
+        }
+
+        if (styles.strikethrough && !this.#state.styles.includes('\u001B[9m')) {
+            this.#state.styles.push('\u001B[9m');
+        }
+
+        // Apply custom styles (e.g., custom ANSI codes like 256 colors)
+        Object.keys(styles).forEach((key) => {
+            if (key !== 'color' && key !== 'bgColor' && styles[key]) {
+                // Assume the value is a valid ANSI code or handle as needed
+                this.#state.customStyles.push(styles[key]);
+            }
+        });
+
         this.#applyStyles();
         return this;
     }

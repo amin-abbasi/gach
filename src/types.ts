@@ -90,3 +90,14 @@ export interface RGB {
     g: number;
     b: number;
 }
+
+export interface StyleOptions {
+    color?: Colors | COLOR_NAMES; // For foreground color
+    bgColor?: Colors | COLOR_NAMES; // For background color
+    bold?: boolean; // For bold style
+    underline?: boolean; // For underline style
+    italic?: boolean; // For italic style
+    inverse?: boolean; // For inverse style
+    strikethrough?: boolean; // For strikethrough style
+    [key: string]: any; // For additional custom styles, like custom ANSI escape codes
+}
