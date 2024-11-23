@@ -1,5 +1,7 @@
 # Gach - ANSI Text Styling Library
 
+<img src="./gach.png" alt="alt text" title="Gach" width="600" height="400">
+
 Gach is a JavaScript and TypeScript library for styling and coloring text using ANSI escape codes. It allows you to easily apply various text styles and colors to your console output.
 
 ## Installation
