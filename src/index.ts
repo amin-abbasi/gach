@@ -1,4 +1,4 @@
-import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, HEX_PATTERN, HexColorString, RGB, STYLE_END, StyleOptions } from './types';
+import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, HEX_PATTERN, HexColorString, STYLE_END, StyleOptions } from './types';
 export * from './types';
 
 /**
@@ -30,7 +30,7 @@ class Gach {
         return this.#modifiedText;
     }
 
-    #applyStyles() {
+    #applyStyles(): this {
         const codes = [];
         if (this.#state.color) codes.push(this.#state.color);
         if (this.#state.bgColor) codes.push(this.#state.bgColor);
@@ -74,7 +74,7 @@ class Gach {
      * Resets the text to its original form.
      * @returns The current `Gach` instance for chaining.
      */
-    reset() {
+    reset(): this {
         this.#state = { styles: [], customStyles: [] };
         this.#modifiedText = this.#originalText;
         return this;
@@ -85,7 +85,7 @@ class Gach {
      * @param color - The color name.
      * @returns The current `Gach` instance for chaining.
      */
-    color(color: Colors | COLOR_NAMES) {
+    color(color: Colors | COLOR_NAMES): this {
         const colorCode = COLOR_CODES[color].valueOf();
         // if (!colorCode) return this;
         // this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`;
@@ -101,7 +101,7 @@ class Gach {
      * @param bgColor - The background color name.
      * @returns The current `Gach` instance for chaining.
      */
-    bgColor(bgColor: Colors | COLOR_NAMES) {
+    bgColor(bgColor: Colors | COLOR_NAMES): this {
         const colorCode = BACKGROUND_COLOR_CODES[bgColor].valueOf();
         // if (!colorCode) return this;
         // this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`;
@@ -119,7 +119,7 @@ class Gach {
      * @param blue - The blue component (0-255).
      * @returns The current `Gach` instance for chaining.
      */
-    rgb(red: number, green: number, blue: number) {
+    rgb(red: number, green: number, blue: number): this {
         if (!this.#validateRgb(red, green, blue)) {
             console.error(`Invalid RGB values: [${red}, ${green}, ${blue}]. Each value must be an integer between 0 and 255.`);
         } else {
@@ -133,7 +133,7 @@ class Gach {
      * @param hex - The hexadecimal color string.
      * @returns The current `Gach` instance for chaining.
      */
-    hex(hex: string) {
+    hex(hex: string): this {
         if (!this.#isValidHexColor(hex)) {
             console.error(`Invalid HEX color code: ${hex}. Ensure the HEX value is in the format #RRGGBB or #RGB.`);
         } else {
@@ -147,7 +147,7 @@ class Gach {
      * Underlines the text.
      * @returns The current `Gach` instance for chaining.
      */
-    underline() {
+    underline(): this {
         // this.#modifiedText = `\u001B[4m${this.#modifiedText}${STYLE_END}`;
         if (!this.#state.styles.includes('\u001B[4m')) {
             this.#state.styles.push('\u001B[4m');
@@ -160,7 +160,7 @@ class Gach {
      * Makes the text bold.
      * @returns The current `Gach` instance for chaining.
      */
-    bold() {
+    bold(): this {
         // this.#modifiedText = `\x1b[1m${this.#modifiedText}${STYLE_END}`;
         if (!this.#state.styles.includes('\x1b[1m')) {
             this.#state.styles.push('\x1b[1m');
@@ -173,7 +173,7 @@ class Gach {
      * Makes the text italic.
      * @returns The current `Gach` instance for chaining.
      */
-    italic() {
+    italic(): this {
         // this.#modifiedText = `\u001B[3m${this.#modifiedText}${STYLE_END}`;
         if (!this.#state.styles.includes('\u001B[3m')) {
             this.#state.styles.push('\u001B[3m');
@@ -186,7 +186,7 @@ class Gach {
      * Inverts the text colors.
      * @returns The current `Gach` instance for chaining.
      */
-    inverse() {
+    inverse(): this {
         // this.#modifiedText = `\u001B[7m${this.#modifiedText}${STYLE_END}`;
         if (!this.#state.styles.includes('\u001B[7m')) {
             this.#state.styles.push('\u001B[7m');
@@ -199,7 +199,7 @@ class Gach {
      * Applies a strikethrough effect to the text.
      * @returns The current `Gach` instance for chaining.
      */
-    strikethrough() {
+    strikethrough(): this {
         // this.#modifiedText = `\u001B[9m${this.#modifiedText}${STYLE_END}`;
         if (!this.#state.styles.includes('\u001B[9m')) {
             this.#state.styles.push('\u001B[9m');
@@ -218,7 +218,7 @@ class Gach {
      * const instance = new Gach();
      * instance.applyStyles({ color: 'red', bgColor: 'blue' });
      */
-    customStyle(styles: StyleOptions) {
+    customStyle(styles: StyleOptions): this {
         if (styles.color) {
             const colorCode = COLOR_CODES[styles.color as Colors].valueOf();
             if (colorCode) this.#state.color = colorCode;
@@ -267,7 +267,7 @@ class Gach {
      * Apply green text and bold style (success message).
      * @returns The current `Gach` instance for chaining.
      */
-    success() {
+    success(): this {
         this.color(COLOR_NAMES.GREEN).bold();
         this.#applyStyles();
         return this;
@@ -277,7 +277,7 @@ class Gach {
      * Apply red text, bold, and underline style (error message).
      * @returns The current `Gach` instance for chaining.
      */
-    error() {
+    error(): this {
         this.color(COLOR_NAMES.RED).bold().underline();
         this.#applyStyles();
         return this;
@@ -287,7 +287,7 @@ class Gach {
      * Apply yellow text, bold, and italic style (warning message).
      * @returns The current `Gach` instance for chaining.
      */
-    warning() {
+    warning(): this {
         this.color(COLOR_NAMES.YELLOW).bold().italic();
         this.#applyStyles();
         return this;
@@ -297,7 +297,7 @@ class Gach {
      * Apply rainbow effect with a variety of colors.
      * @returns The current `Gach` instance for chaining.
      */
-    rainbow() {
+    rainbow(): this {
         const rainbowColors: Colors[] = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];
         let rainbowText = '';
         let colorIndex = 0;

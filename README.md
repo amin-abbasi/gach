@@ -1,26 +1,6 @@
 # Gach - ANSI Text Styling Library
 
-Gach is a JavaScript library for styling and coloring text using ANSI escape codes. It allows you to easily apply various text styles and colors to your console output.
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Methods](#methods)
-  - [Constructor](#constructor)
-  - [get text](#get-text)
-  - [reset](#reset)
-  - [color](#color)
-  - [bgColor](#bgcolor)
-  - [rgb](#rgb)
-  - [hex](#hex)
-  - [underline](#underline)
-  - [bold](#bold)
-  - [italic](#italic)
-  - [inverse](#inverse)
-  - [strikethrough](#strikethrough)
-  - [customStyle](#customstyle)
-- [Example](#example)
+Gach is a JavaScript and TypeScript library for styling and coloring text using ANSI escape codes. It allows you to easily apply various text styles and colors to your console output.
 
 ## Installation
 You can install Gach via npm:
@@ -47,9 +27,6 @@ console.log(styledText);
 This will output the text "Hello, World!" styled with red text on a blue background, bold, and underlined effect.
 
 
-# gach
-**gach** is a package designed to add color and style to your terminal text messages.
-
 ## Features
 - Pre-defined system font & background colors (red, green, blue, yellow, cyan, magenta, gray, black, and their light variants).
 - Font color using `rgb` and `hex` values.
@@ -60,30 +37,52 @@ This will output the text "Hello, World!" styled with red text on a blue backgro
 - Reset function to revert text to its original state.
 - Error handling for invalid color inputs (if applicable).
 
-## Install
 
-You can install **gach** using npm:
-
-```bash
-npm i gach
-```
-
-## Usage Examples
+## More Examples
 You can use this package like this in both Javascript and Typescript:
+
 ```ts
 import gach, { COLOR_NAMES } from 'gach'
 
 const log = console.log
-
+// 1. Empty text test:
 log(`<<< ${gach('').color('magenta').bold().text} >>> <-- Warning: Received an Empty String!`);
-log(`<<< ${gach('INFO: Text styled with LIGHT BLUE').color(COLOR_NAMES.LIGHT_BLUE).text} >>>`);
-log(`<<< ${gach('ALERT: Important message with a red background').bgColor(COLOR_NAMES.RED).bold().text} >>>`);
-log(`<<< ${gach('NOTE: Text styled with custom RGB color [118, 38, 113]').rgb(118, 38, 113).text} >>>`);
-log(`<<< ${gach('INFO: Styled with HEX color code #FF7733').hex('#FF7733').text} >>>`);
-log(`<<< ${gach('CAUTION: Emphasized with bold, underline, and green text').underline().bold().color('green').text} >>>`);
-log(`<<< ${gach('DEBUG: Reset text formatting to normal').underline().bold().color(COLOR_NAMES.RED).reset().text} >>>`);
-log(`<<< ${gach('SUCCESS: Styled with red text and yellow background').bgColor(COLOR_NAMES.LIGHT_YELLOW).color(COLOR_NAMES.RED).bold().underline().text} >>>`);
-log(`<<< ${gach('Custom Styled Text').customStyle({ color: COLOR_NAMES.MAGENTA, bgColor: COLOR_NAMES.LIGHT_BLUE, strikethrough: true }).text} >>>`);
+
+// 2. Text styled with Light Blue color:
+log(`<<< ${gach('Text styled with LIGHT BLUE').color(COLOR_NAMES.LIGHT_BLUE).text} >>>`);
+
+// 3. Text with a red background and bold style:
+log(`<<< ${gach('Important message with a red background').bgColor(COLOR_NAMES.RED).bold().text} >>>`);
+
+// 4. Custom RGB color [118, 38, 113]:
+log(`<<< ${gach('Text styled with custom RGB color [118, 38, 113]').rgb(118, 38, 113).text} >>>`);
+
+// 5. Styled with HEX color code #FF7733:
+log(`<<< ${gach('Styled with HEX color code #FF7733').hex('#FF7733').text} >>>`);
+
+// 6. Bold, underline, and green text:
+log(`<<< ${gach('Emphasized with bold, underline, and green text').underline().bold().color('green').text} >>>`);
+
+// 7. Reset text formatting to normal:
+log(`<<< ${gach('Reset text formatting to normal').underline().bold().color(COLOR_NAMES.RED).reset().text} >>>`);
+
+// 8. Styled with red text and yellow background:
+log(`<<< ${gach('Styled with red text and yellow background').bgColor(COLOR_NAMES.LIGHT_YELLOW).color(COLOR_NAMES.RED).bold().underline().text} >>>`);
+
+// 9. Success message (green, bold):
+log(`<<< ${gach('Success message: Operation successful').success().text} >>>`);
+
+// 10. Error message (red, bold, underlined):
+log(`<<< ${gach('Error message: Something went wrong!').error().text} >>>`);
+
+// 11. Warning message (yellow, bold, italic):
+log(`<<< ${gach('Warning message: Be cautious!').warning().text} >>>`);
+
+// 12. Rainbow effect (multicolored text):
+log(`<<< ${gach('Rainbow effect: Colorful Text!').rainbow().text} >>>`);
+
+// 13. Custom styled message with specific colors, background, and strikethrough:
+log(`<<< ${gach('This is a custom styled message').customStyle({ color: COLOR_NAMES.MAGENTA, bgColor: COLOR_NAMES.LIGHT_BLUE, strikethrough: true }).text} >>>`);
 
 ```
 

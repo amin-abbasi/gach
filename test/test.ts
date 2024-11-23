@@ -29,16 +29,16 @@ log(`<<< ${gach('Reset text formatting to normal').underline().bold().color(COLO
 log(`<<< ${gach('Styled with red text and yellow background').bgColor(COLOR_NAMES.LIGHT_YELLOW).color(COLOR_NAMES.RED).bold().underline().text} >>>`);
 
 // 9. Success message (green, bold):
-log(`<<< ${gach("Success message: Operation successful").success().text} >>>`);
+log(`<<< ${gach('Success message: Operation successful').success().text} >>>`);
 
 // 10. Error message (red, bold, underlined):
-log(`<<< ${gach("Error message: Something went wrong!").error().text} >>>`);
+log(`<<< ${gach('Error message: Something went wrong!').error().text} >>>`);
 
 // 11. Warning message (yellow, bold, italic):
-log(`<<< ${gach("Warning message: Be cautious!").warning().text} >>>`);
+log(`<<< ${gach('Warning message: Be cautious!').warning().text} >>>`);
 
 // 12. Rainbow effect (multicolored text):
-log(`<<< ${gach("Rainbow effect: Colorful Text!").rainbow().text} >>>`);
+log(`<<< ${gach('Rainbow effect: Colorful Text!').rainbow().text} >>>`);
 
 // 13. Custom styled message with specific colors, background, and strikethrough:
 log(`<<< ${gach('This is a custom styled message').customStyle({ color: COLOR_NAMES.MAGENTA, bgColor: COLOR_NAMES.LIGHT_BLUE, strikethrough: true }).text} >>>`);
