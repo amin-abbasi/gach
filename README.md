@@ -2,7 +2,7 @@
 
 <img src="./gach.png" alt="alt text" title="Gach" width="600" height="400">
 
-Gach is a JavaScript and TypeScript library for styling and coloring text using ANSI escape codes. It allows you to easily apply various text styles and colors to your console output.
+Gach is a JavaScript and TypeScript library for styling and coloring text using ANSI escape codes. It allows you to easily apply various text styles and colors to your console output. It is typed, has no dependencies, and respects `NO_COLOR`.
 
 ## Installation
 You can install Gach via npm:
@@ -34,10 +34,11 @@ This will output the text "Hello, World!" styled with red text on a blue backgro
 - Font color using `rgb` and `hex` values.
 - Support for predefined color names (e.g., `COLOR_NAMES`).
 - Font styles (bold, italic, underline, strikethrough, inverse).
-- Custom styles can be applied using an object for more flexibility.
-- Nested functions for chaining styles.
+- Custom styles can be applied using an object for more flexibility, including any extra ANSI code (such as 256 colors).
+- Nested functions for chaining styles, in any order: an `rgb` or `hex` color stays when other styles follow.
 - Reset function to revert text to its original state.
-- Error handling for invalid color inputs (if applicable).
+- Invalid colors are reported on the console and leave the text as it was.
+- Colors turn off with the `NO_COLOR` environment variable, and `FORCE_COLOR` overrides it.
 
 
 ## More Examples
@@ -118,3 +119,22 @@ Supported styles are:
 - underline
 - strikethrough
 - inverse
+
+### Extra ANSI codes
+Any other option of `customStyle` whose value is an ANSI code is applied too, for example color 208 of the 256-color palette:
+
+```ts
+log(gach('Orange text').customStyle({ orange: '38;5;208', bold: true }).text);
+```
+
+## Turning colors off
+Gach follows [NO_COLOR](https://no-color.org): when the `NO_COLOR` environment variable is set to anything but an empty string, every method returns the text unstyled. As in Node.js, `FORCE_COLOR` wins when it is set: `FORCE_COLOR=0` (or `false`) turns colors off, any other value turns them on. Both are read each time, so changing them at run time takes effect at once. In browsers, where there is no `process`, colors are always on.
+
+## Development
+```bash
+npm install
+npm test        # compiles the tests and runs them with node:test
+npm run build   # writes dist/
+```
+
+See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.

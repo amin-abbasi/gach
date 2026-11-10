@@ -68,7 +68,8 @@ export enum BACKGROUND_COLOR_CODES {
     blue = '44',
     magenta = '45',
     cyan = '46',
-    gray = '47',
+    // 47 is white: gray is bright black, as for the text (90)
+    gray = '100',
     lightBlack = '100',
     lightRed = '101',
     lightGreen = '102',
