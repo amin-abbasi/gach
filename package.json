@@ -1,6 +1,6 @@
 {
   "name": "gach",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Chainable ANSI colours and styles for terminal text, typed, with no dependencies.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
