@@ -132,9 +132,9 @@ Gach follows [NO_COLOR](https://no-color.org): when the `NO_COLOR` environment v
 
 ## Development
 ```bash
-npm install
-npm test        # compiles the tests and runs them with node:test
-npm run build   # writes dist/
+pnpm install
+pnpm test        # compiles the tests and runs them with node:test
+pnpm build       # writes dist/
 ```
 
 See [CHANGELOG.md](./CHANGELOG.md) for what changed in each version.

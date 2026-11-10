@@ -1,6 +1,8 @@
 # Changelog
 
-## 1.8.0
+## 1.8.1
+
+The first release with these changes (1.8.0 was not published).
 
 ### Fixed
 
@@ -14,6 +16,6 @@
 ### Added
 
 - `NO_COLOR` turns colors off and `FORCE_COLOR` overrides it, as in Node.js (see "Turning colors off" in the README).
-- Tests (`npm test`, with `node:test`) and pinned development tools; the old visual check is `examples/demo.ts`.
+- Tests (`pnpm test`, with `node:test`) and pinned development tools, installed with pnpm (`pnpm-lock.yaml`); the old visual check is `examples/demo.ts`.
 
 Every color and style that worked before produces exactly the same escape codes.
