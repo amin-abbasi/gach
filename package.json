@@ -1,22 +1,40 @@
 {
   "name": "gach",
-  "version": "1.7.5",
-  "description": "This is a package to colorize your terminal text messages.",
+  "version": "1.8.0",
+  "description": "Chainable ANSI colours and styles for terminal text, typed, with no dependencies.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "rm -rf .test-build && tsc -p tsconfig.test.json && node --test .test-build/test/gach.test.js",
+    "prepublishOnly": "npm test && npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amin-abbasi/gach.git"
   },
-  "keywords": [],
+  "keywords": [
+    "ansi",
+    "color",
+    "colour",
+    "terminal",
+    "console",
+    "cli",
+    "style",
+    "typescript",
+    "no-color"
+  ],
   "author": "amin-abbasi",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/amin-abbasi/gach/issues"
   },
-  "homepage": "https://github.com/amin-abbasi/gach#readme"
+  "homepage": "https://github.com/amin-abbasi/gach#readme",
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  }
 }

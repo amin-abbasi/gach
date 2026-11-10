@@ -1,5 +1,24 @@
-import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_END, COLOR_NAMES, Colors, HEX_PATTERN, HexColorString, STYLE_END, StyleOptions } from './types';
+import { BACKGROUND_COLOR_CODES, COLOR_CODES, COLOR_NAMES, Colors, HEX_PATTERN, HexColorString, STYLE_END, StyleOptions } from './types';
 export * from './types';
+
+/** The ANSI codes of the text styles. */
+const STYLE_CODES = { bold: '1', italic: '3', underline: '4', inverse: '7', strikethrough: '9' } as const;
+type Style = keyof typeof STYLE_CODES;
+
+/** An extra ANSI (SGR) code `customStyle` accepts, such as `'38;5;208'` for colour 208 of the 256. */
+const SGR_PATTERN = /^\d{1,3}(;\d{1,3})*$/;
+
+/**
+ * Whether colours are on. As in Node.js, `FORCE_COLOR` decides when set (`0` or `false` turn colours off, anything
+ * else on); otherwise a non-empty `NO_COLOR` turns them off (https://no-color.org). Read on every call, and always on
+ * where there is no `process` (browsers).
+ */
+function colorsEnabled(): boolean {
+    const env = typeof process === 'undefined' ? undefined : process.env;
+    if (!env) return true;
+    if (env.FORCE_COLOR !== undefined) return env.FORCE_COLOR !== '0' && env.FORCE_COLOR.toLowerCase() !== 'false';
+    return !env.NO_COLOR;
+}
 
 /**
  * A class for styling and coloring text using ANSI escape codes.
@@ -11,7 +30,8 @@ class Gach {
     /** The modified text with applied styles. */
     #modifiedText: string;
 
-    #state: { color?: string; bgColor?: string; styles: string[]; customStyles: string[] };
+    /** The colours (ANSI parameters such as `'31'` or `'38;2;255;119;51'`), the styles in the order given, and extra codes. */
+    #state: { color?: string; bgColor?: string; styles: Style[]; codes: string[] };
 
     /**
      * Creates a new `Gach` instance.
@@ -20,7 +40,7 @@ class Gach {
     constructor(text: string) {
         this.#originalText = text;
         this.#modifiedText = text;
-        this.#state = { styles: [], customStyles: [] };
+        this.#state = { styles: [], codes: [] };
     }
 
     /**
@@ -30,15 +50,23 @@ class Gach {
         return this.#modifiedText;
     }
 
+    // The text is always built from the original and the whole state, so every colour and style is kept whatever the order
     #applyStyles(): this {
-        const codes = [];
-        if (this.#state.color) codes.push(this.#state.color);
-        if (this.#state.bgColor) codes.push(this.#state.bgColor);
-        const coloringCode = codes.length > 0 ? `\u001B[${codes.join(';')}m` : '';
-
-        const styleCodes = this.#state.styles.join('');
+        const { color, bgColor, styles, codes } = this.#state;
+        if (!colorsEnabled()) {
+            this.#modifiedText = this.#originalText;
+            return this;
+        }
+        const colors = [color, bgColor].filter(Boolean);
+        const coloringCode = colors.length > 0 ? `\u001B[${colors.join(';')}m` : '';
+        const styleCodes = [...styles.map((style) => STYLE_CODES[style]), ...codes].map((code) => `\u001B[${code}m`).join('');
         this.#modifiedText = `${coloringCode}${styleCodes}${this.#originalText}${STYLE_END}`;
         return this;
+    }
+
+    #addStyle(style: Style): this {
+        if (!this.#state.styles.includes(style)) this.#state.styles.push(style);
+        return this.#applyStyles();
     }
 
     // Helper method to validate RGB values (must be integers between 0 and 255)
@@ -53,21 +81,12 @@ class Gach {
     /**
      * Converts a hexadecimal color to RGB.
      * @param hex - The hexadecimal color string.
-     * @returns An `RGB` object or `null` if the input is invalid.
+     * @returns An `RGB` object.
      */
     #hexToRgb(hex: string): { r: number; g: number; b: number } {
         const hexValue = hex.slice(1);
-        let r: number, g: number, b: number;
-        if (hexValue.length === 3) {
-            r = parseInt(hexValue[0] + hexValue[0], 16);
-            g = parseInt(hexValue[1] + hexValue[1], 16);
-            b = parseInt(hexValue[2] + hexValue[2], 16);
-        } else {
-            r = parseInt(hexValue.slice(0, 2), 16);
-            g = parseInt(hexValue.slice(2, 4), 16);
-            b = parseInt(hexValue.slice(4, 6), 16);
-        }
-        return { r, g, b };
+        const full = hexValue.length === 3 ? [...hexValue].map((digit) => digit + digit).join('') : hexValue;
+        return { r: parseInt(full.slice(0, 2), 16), g: parseInt(full.slice(2, 4), 16), b: parseInt(full.slice(4, 6), 16) };
     }
 
     /**
@@ -75,45 +94,43 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     reset(): this {
-        this.#state = { styles: [], customStyles: [] };
+        this.#state = { styles: [], codes: [] };
         this.#modifiedText = this.#originalText;
         return this;
     }
 
     /**
-     * Applies a text color.
+     * Applies a text color. An unknown name is reported and leaves the text as it was.
      * @param color - The color name.
      * @returns The current `Gach` instance for chaining.
      */
     color(color: Colors | COLOR_NAMES): this {
-        const colorCode = COLOR_CODES[color].valueOf();
-        // if (!colorCode) return this;
-        // this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`;
-        if (colorCode) {
-            this.#state.color = colorCode;
-            this.#applyStyles();
+        const colorCode: string | undefined = COLOR_CODES[color as Colors];
+        if (!colorCode) {
+            console.error(`Invalid color name: ${color}.`);
+            return this;
         }
-        return this;
+        this.#state.color = colorCode;
+        return this.#applyStyles();
     }
 
     /**
-     * Applies a background color.
+     * Applies a background color. An unknown name is reported and leaves the text as it was.
      * @param bgColor - The background color name.
      * @returns The current `Gach` instance for chaining.
      */
     bgColor(bgColor: Colors | COLOR_NAMES): this {
-        const colorCode = BACKGROUND_COLOR_CODES[bgColor].valueOf();
-        // if (!colorCode) return this;
-        // this.#modifiedText = `\u001B[${colorCode}m${this.#modifiedText}${COLOR_END}`;
-        if (colorCode) {
-            this.#state.bgColor = colorCode;
-            this.#applyStyles();
+        const colorCode: string | undefined = BACKGROUND_COLOR_CODES[bgColor as Colors];
+        if (!colorCode) {
+            console.error(`Invalid background color name: ${bgColor}.`);
+            return this;
         }
-        return this;
+        this.#state.bgColor = colorCode;
+        return this.#applyStyles();
     }
 
     /**
-     * Applies an RGB color to the text.
+     * Applies an RGB color to the text; it stays when other styles follow.
      * @param red - The red component (0-255).
      * @param green - The green component (0-255).
      * @param blue - The blue component (0-255).
@@ -122,25 +139,24 @@ class Gach {
     rgb(red: number, green: number, blue: number): this {
         if (!this.#validateRgb(red, green, blue)) {
             console.error(`Invalid RGB values: [${red}, ${green}, ${blue}]. Each value must be an integer between 0 and 255.`);
-        } else {
-            this.#modifiedText = `\u001B[38;2;${red};${green};${blue}m${this.#modifiedText}${COLOR_END}`;
+            return this;
         }
-        return this;
+        this.#state.color = `38;2;${red};${green};${blue}`;
+        return this.#applyStyles();
     }
 
     /**
-     * Applies a color using a hexadecimal code.
+     * Applies a color using a hexadecimal code; it stays when other styles follow.
      * @param hex - The hexadecimal color string.
      * @returns The current `Gach` instance for chaining.
      */
     hex(hex: string): this {
         if (!this.#isValidHexColor(hex)) {
             console.error(`Invalid HEX color code: ${hex}. Ensure the HEX value is in the format #RRGGBB or #RGB.`);
-        } else {
-            const { r, g, b } = this.#hexToRgb(hex);
-            this.#modifiedText = `\u001B[38;2;${r};${g};${b}m${this.#modifiedText}${COLOR_END}`;
+            return this;
         }
-        return this;
+        const { r, g, b } = this.#hexToRgb(hex);
+        return this.rgb(r, g, b);
     }
 
     /**
@@ -148,12 +164,7 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     underline(): this {
-        // this.#modifiedText = `\u001B[4m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.styles.includes('\u001B[4m')) {
-            this.#state.styles.push('\u001B[4m');
-        }
-        this.#applyStyles();
-        return this;
+        return this.#addStyle('underline');
     }
 
     /**
@@ -161,12 +172,7 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     bold(): this {
-        // this.#modifiedText = `\x1b[1m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.styles.includes('\x1b[1m')) {
-            this.#state.styles.push('\x1b[1m');
-        }
-        this.#applyStyles();
-        return this;
+        return this.#addStyle('bold');
     }
 
     /**
@@ -174,150 +180,77 @@ class Gach {
      * @returns The current `Gach` instance for chaining.
      */
     italic(): this {
-        // this.#modifiedText = `\u001B[3m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.styles.includes('\u001B[3m')) {
-            this.#state.styles.push('\u001B[3m');
-        }
-        this.#applyStyles();
-        return this;
+        return this.#addStyle('italic');
     }
 
     /**
-     * Inverts the text colors.
+     * Swaps the text and background colors.
      * @returns The current `Gach` instance for chaining.
      */
     inverse(): this {
-        // this.#modifiedText = `\u001B[7m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.styles.includes('\u001B[7m')) {
-            this.#state.styles.push('\u001B[7m');
-        }
-        this.#applyStyles();
-        return this;
+        return this.#addStyle('inverse');
     }
 
     /**
-     * Applies a strikethrough effect to the text.
+     * Strikes the text through.
      * @returns The current `Gach` instance for chaining.
      */
     strikethrough(): this {
-        // this.#modifiedText = `\u001B[9m${this.#modifiedText}${STYLE_END}`;
-        if (!this.#state.styles.includes('\u001B[9m')) {
-            this.#state.styles.push('\u001B[9m');
-        }
-        this.#applyStyles();
-        return this;
+        return this.#addStyle('strikethrough');
     }
 
     /**
-     * Applies multiple custom styles using an object with various attributes.
-     *
-     * @param {StyleOptions} styles - An object containing style properties such as color, bgColor, and other CSS styles.
+     * Applies several styles at once. Besides the named options, any other option whose value is an ANSI code
+     * (such as `{ orange: '38;5;208' }`) is applied too; other values are ignored.
+     * @param styles - The style options.
      * @returns The current `Gach` instance for chaining.
-     *
-     * @example
-     * const instance = new Gach();
-     * instance.applyStyles({ color: 'red', bgColor: 'blue' });
      */
     customStyle(styles: StyleOptions): this {
         if (styles.color) {
-            const colorCode = COLOR_CODES[styles.color as Colors].valueOf();
+            const colorCode: string | undefined = COLOR_CODES[styles.color as Colors];
             if (colorCode) this.#state.color = colorCode;
         }
-
         if (styles.bgColor) {
-            const bgColorCode = BACKGROUND_COLOR_CODES[styles.bgColor as Colors].valueOf();
+            const bgColorCode: string | undefined = BACKGROUND_COLOR_CODES[styles.bgColor as Colors];
             if (bgColorCode) this.#state.bgColor = bgColorCode;
         }
-
-        if (styles.bold && !this.#state.styles.includes('\x1b[1m')) {
-            this.#state.styles.push('\x1b[1m');
+        // The styles in this order, as before 1.8.0, so the codes come out the same
+        for (const style of ['bold', 'underline', 'italic', 'inverse', 'strikethrough'] as const) {
+            if (styles[style] && !this.#state.styles.includes(style)) this.#state.styles.push(style);
         }
-
-        if (styles.underline && !this.#state.styles.includes('\u001B[4m')) {
-            this.#state.styles.push('\u001B[4m');
-        }
-
-        if (styles.italic && !this.#state.styles.includes('\u001B[3m')) {
-            this.#state.styles.push('\u001B[3m');
-        }
-
-        if (styles.inverse && !this.#state.styles.includes('\u001B[7m')) {
-            this.#state.styles.push('\u001B[7m');
-        }
-
-        if (styles.strikethrough && !this.#state.styles.includes('\u001B[9m')) {
-            this.#state.styles.push('\u001B[9m');
-        }
-
-        // Apply custom styles (e.g., custom ANSI codes like 256 colors)
-        Object.keys(styles).forEach((key) => {
-            if (key !== 'color' && key !== 'bgColor' && styles[key]) {
-                // Assume the value is a valid ANSI code or handle as needed
-                this.#state.customStyles.push(styles[key]);
+        for (const [key, value] of Object.entries(styles)) {
+            if (key !== 'color' && key !== 'bgColor' && !(key in STYLE_CODES) && typeof value === 'string' && SGR_PATTERN.test(value) && !this.#state.codes.includes(value)) {
+                this.#state.codes.push(value);
             }
-        });
-
-        this.#applyStyles();
-        return this;
+        }
+        return this.#applyStyles();
     }
 
     // ------------ Convenience Methods ------------
 
-    /**
-     * Apply green text and bold style (success message).
-     * @returns The current `Gach` instance for chaining.
-     */
+    /** Green and bold. */
     success(): this {
-        this.color(COLOR_NAMES.GREEN).bold();
-        this.#applyStyles();
-        return this;
+        return this.color(COLOR_NAMES.GREEN).bold();
     }
 
-    /**
-     * Apply red text, bold, and underline style (error message).
-     * @returns The current `Gach` instance for chaining.
-     */
+    /** Red, bold and underlined. */
     error(): this {
-        this.color(COLOR_NAMES.RED).bold().underline();
-        this.#applyStyles();
-        return this;
+        return this.color(COLOR_NAMES.RED).bold().underline();
     }
 
-    /**
-     * Apply yellow text, bold, and italic style (warning message).
-     * @returns The current `Gach` instance for chaining.
-     */
+    /** Yellow, bold and italic. */
     warning(): this {
-        this.color(COLOR_NAMES.YELLOW).bold().italic();
-        this.#applyStyles();
-        return this;
+        return this.color(COLOR_NAMES.YELLOW).bold().italic();
     }
 
-    /**
-     * Apply rainbow effect with a variety of colors.
-     * @returns The current `Gach` instance for chaining.
-     */
+    /** Each character in the next color of the rainbow. */
     rainbow(): this {
         const rainbowColors: Colors[] = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];
-        let rainbowText = '';
-        let colorIndex = 0;
-
-        // Split the original text into individual characters and apply rainbow effect
-        for (let i = 0; i < this.#originalText.length; i++) {
-            rainbowText += gach(this.#originalText[i]).color(rainbowColors[colorIndex]).text;
-            colorIndex = (colorIndex + 1) % rainbowColors.length; // Cycle through colors
-        }
-
-        this.#modifiedText = rainbowText; // Set the rainbow effect text
+        this.#modifiedText = [...this.#originalText].map((character, i) => gach(character).color(rainbowColors[i % rainbowColors.length]).text).join('');
         return this;
     }
 }
 
-/**
- * A helper function to create a `Gach` instance.
- * @param text - The text to be styled or colored.
- * @returns A new `Gach` instance.
- */
 function gach(text: string): Gach {
     return new Gach(text);
 }
